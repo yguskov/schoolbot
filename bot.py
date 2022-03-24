@@ -2,8 +2,6 @@
 # pylint: disable=C0116,W0613
 # This program is dedicated to the public domain under the CC0 license.
 
-# wtf
-
 """
 Simple Bot to reply to Telegram messages.
 
@@ -142,25 +140,25 @@ def main() -> None:
     dispatcher = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dispatcher.add_handler(CommandHandler("start", authorize))
-    dispatcher.add_handler(CommandHandler("help", help_command))
+    # dispatcher.add_handler(CommandHandler("start", authorize))
+    # dispatcher.add_handler(CommandHandler("help", help_command))
 
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
-#     conv_handler = ConversationHandler(
-#         entry_points=[CommandHandler('start', start)],
-#         states={
-#             LOGIN: [MessageHandler(Filters.regex('^(Да|Нет)$'), login)],
-#             PASSWORD: [MessageHandler(Filters.text & ~Filters.command, password)],
-#             AUTHORIZE: [MessageHandler(Filters.text & ~Filters.command, authorize)],
-#         },
-#         fallbacks=[CommandHandler('cancel', cancel)],
-#     )
-#
-#     dispatcher.add_handler(conv_handler)
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+        states={
+            LOGIN: [MessageHandler(Filters.regex('^(Да|Нет)$'), login)],
+            PASSWORD: [MessageHandler(Filters.text & ~Filters.command, password)],
+            AUTHORIZE: [MessageHandler(Filters.text & ~Filters.command, authorize)],
+        },
+        fallbacks=[CommandHandler('cancel', cancel)],
+    )
+
+    dispatcher.add_handler(conv_handler)
 
 
     # on non command i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the Bot
     updater.start_polling()
