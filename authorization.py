@@ -1,9 +1,9 @@
 import logging
 
-import school
+from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram.ext import CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 
-from telegram import Update, ForceReply, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+import school
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -53,7 +53,6 @@ def login(update: Update, context: CallbackContext) -> int:
         'Укажите логин',
         reply_markup=ReplyKeyboardRemove(),
     )
-
     return PASSWORD
 
 def password(update: Update, context: CallbackContext) -> int:
@@ -64,7 +63,6 @@ def password(update: Update, context: CallbackContext) -> int:
         'Ok, теперь пароль',
         reply_markup=ReplyKeyboardRemove(),
     )
-
     return AUTHORIZE
 
 def authorize(update: Update, context: CallbackContext) -> int:

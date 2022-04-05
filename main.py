@@ -17,10 +17,10 @@ bot.
 
 import logging
 
-from telegram.ext import Updater
+from telegram.ext import Updater, CommandHandler
 
-from authorization import conv_handler
-from homework import conv_handler_homework
+from authorization import conv_handler, help_command
+from homework import conv_handler_homework, conv_handler_grades
 
 # Enable logging
 logging.basicConfig(
@@ -41,7 +41,6 @@ logger = logging.getLogger(__name__)
 #         reply_markup=ForceReply(selective=True),
 #     )
 
-LOGIN, PASSWORD, AUTHORIZE = range(3)
 
 
 def main() -> None:
@@ -55,13 +54,10 @@ def main() -> None:
 
     # on different commands - answer in Telegram
     # dispatcher.add_handler(CommandHandler("start", authorize))
-    # dispatcher.add_handler(CommandHandler("help", help_command))
-
-    # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
-
+    dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(conv_handler)
+    dispatcher.add_handler(conv_handler_grades)
     dispatcher.add_handler(conv_handler_homework)
-
     # on non command i.e message - echo the message on Telegram
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 

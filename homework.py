@@ -1,7 +1,7 @@
 import logging
 
-from telegram import Update, ForceReply, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram.ext import CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -19,7 +19,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
     return ConversationHandler.END
 
-HOMEWORK, DATE, TOMORROW = range(3)
+HOMEWORK, DATE, TOMORROW, GRADES = range(4)
 
 def start_homework(update: Update, context: CallbackContext) -> int:
     """Starts the conversation and asks the user about their gender."""
@@ -58,9 +58,15 @@ def tomorrow(update: Update, context: CallbackContext) -> int:
     update.message.reply_text('Вот вам дз на завтра', reply_markup=ReplyKeyboardRemove(),)
     return ConversationHandler.END
 
-def grades(update: Update, context: CallbackContext) -> int:
+def start_grades(update: Update, context: CallbackContext) -> int:
     update.message.reply_text('Оценки в четверти')
+    return GRADES
+
+def grades(update: Update, context: CallbackContext) -> int:
+    m = 1
+    a = [[0] * m for i in range(18)]
     return ConversationHandler.END
+
 
 conv_handler_homework = ConversationHandler(
     entry_points=[CommandHandler('homework', start_homework)],
@@ -68,6 +74,15 @@ conv_handler_homework = ConversationHandler(
         HOMEWORK: [MessageHandler(Filters.regex('^(Дз на завтра|Дз на определенное число)$'), homework)],
         DATE: [MessageHandler(Filters.text, date)],
         TOMORROW: [MessageHandler(Filters.text & ~Filters.command, tomorrow)],
+    },
+    fallbacks=[CommandHandler('cancel', cancel)],
+)
+
+
+conv_handler_grades = ConversationHandler(
+    entry_points=[CommandHandler('grades', start_grades)],
+    states={
+        GRADES: [MessageHandler(Filters.text, grades)],
     },
     fallbacks=[CommandHandler('cancel', cancel)],
 )

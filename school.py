@@ -36,3 +36,4 @@ def auth(login: str, password: str) -> bool:
     print(client.cookies['session_id'])
 
     return True
+
