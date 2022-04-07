@@ -1,15 +1,20 @@
 from bs4 import BeautifulSoup as bs
-import requests
 
 from pathlib import Path
 
 # html_nso = requests.get('https://school.nso.ru/journal-student-grades-action/u.2169')
-html_nso = Path('grades_example.html').read_text()
+
+import codecs
+fileObj = codecs.open("grades_example.html", "r", "utf_8_sig")
+html_nso = fileObj.read() # или читайте по строке
+fileObj.close()
+
+# html_nso = Path('grades_example.html').read_text()
 
 soup_nso = bs(html_nso, 'html.parser')
 
 grades = dict()
-print(len(soup_nso.select('div[mark_date]')))
+
 for domElement in soup_nso.select('div[mark_date]'):
     if domElement.get('mark_date') != "":
         if domElement.get('name') in grades:
@@ -19,6 +24,15 @@ for domElement in soup_nso.select('div[mark_date]'):
     # mn_gr = soup_nso.select('.cell')
     # mean_grades.append(mn_gr)
 
-for subject in grades:
-    print(grades[subject])
+resultString = ''
+for subject, marks in grades.items():
+    # print(subject, end=' : ')
+    resultString += subject
+    resultString += ': '
+    for date, mark in marks.items():
+        resultString += mark + ' '
+        # print(mark, end=' ')
+    resultString += '\n'
+
+print(resultString)
 
