@@ -45,8 +45,8 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
-    updater = Updater("5040799832:AAF9F8KTQr6CuAKKz8ciWkBuKxQHuOBrTcI")  # py_guskov_bot
-    # updater = Updater("5043534943:AAGNjukWrf9a-u1f-33wN6sF09N9WPwzdl0")
+    # updater = Updater("5040799832:AAF9F8KTQr6CuAKKz8ciWkBuKxQHuOBrTcI")  # py_guskov_bot
+    updater = Updater("5043534943:AAGNjukWrf9a-u1f-33wN6sF09N9WPwzdl0")
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
