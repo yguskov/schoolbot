@@ -1,3 +1,4 @@
+import os, json
 import logging
 
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -24,6 +25,18 @@ def cancel(update: Update, context: CallbackContext) -> int:
 LOGIN, PASSWORD, AUTHORIZE = range(3)
 
 def start(update: Update, context: CallbackContext) -> int:
+    session_file_name = 'data/' + get_chat_id(update) + '.json'
+    if os.path.exists(session_file_name):
+        with open(session_file_name) as json_file:
+            school.session_data = json.load(json_file)
+            logger.info("Session id %s ", school.session_data['session_id'])
+
+            update.message.reply_text(
+                'Вы авторизованный пользователь',  # FIXME parse and say to user real name of account
+                reply_markup=ReplyKeyboardRemove(),
+            )
+            return ConversationHandler.END
+
     """Starts the conversation and asks the user about their gender."""
     reply_keyboard = [['Да', 'Нет']]
 
@@ -36,6 +49,9 @@ def start(update: Update, context: CallbackContext) -> int:
 
     return LOGIN
 
+
+userLogin = ''
+userPassword = ''
 
 def login(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
@@ -57,8 +73,10 @@ def login(update: Update, context: CallbackContext) -> int:
 
 def password(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
+    global userLogin
+    userLogin = update.message.text
     user = update.message.from_user
-    logger.info("Login for %s is %s", user.first_name, update.message.text)
+    logger.info("Login for %s is %s", user.first_name, userLogin)
     update.message.reply_text(
         'Ok, теперь пароль',
         reply_markup=ReplyKeyboardRemove(),
@@ -68,13 +86,21 @@ def password(update: Update, context: CallbackContext) -> int:
 def authorize(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
     user = update.message.from_user
+    global userLogin, userPassword, chat_id
 
-    authResult = school.auth("some_login", update.message.text)
+    os.environ['chat_id'] = str(get_chat_id(update))
+    logger.info("Chat Id = %s \n", os.environ['chat_id'])
 
-    logger.info("Password for %s is %s and auth result is %s", user.first_name, update.message.text, authResult)
+    userPassword = update.message.text
+    user = update.message.from_user
+    logger.info("Login and password for %s is %s / %s", user.first_name, userLogin, userPassword)
+
+    auth_result = school.auth(userLogin, userPassword)
+
+    logger.info("Password for %s is %s and auth result is %s", user.first_name, update.message.text, auth_result)
 
     update.message.reply_text(
-        'Авторизация крайне успешна',
+        'Авторизация крайне успешна',  # FIXME parse and say to user real name of account
         reply_markup=ReplyKeyboardRemove(),
     )
 
@@ -99,6 +125,14 @@ conv_handler = ConversationHandler(
 )
 
 
+# method to get chat id
+def get_chat_id(update):
+    chat_id = None
+    if update.message is not None:
+        chat_id = update.message.chat.id
+    elif update.channel_post is not None:
+        chat_id = update.channel_post.chat.id
+    return str(chat_id)
 
 
 
