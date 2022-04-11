@@ -19,8 +19,8 @@ import logging
 
 from telegram.ext import Updater, CommandHandler
 
-from authorization import conv_handler, help_command
-from homework import conv_handler_homework, conv_handler_grades
+from authorization import conv_handler, help_command, grades_command
+from homework import conv_handler_homework
 
 # Enable logging
 logging.basicConfig(
@@ -54,8 +54,8 @@ def main() -> None:
     # on different commands - answer in Telegram
     # dispatcher.add_handler(CommandHandler("start", authorize))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("grades", grades_command))
     dispatcher.add_handler(conv_handler)
-    dispatcher.add_handler(conv_handler_grades)
     dispatcher.add_handler(conv_handler_homework)
     # on non command i.e message - echo the message on Telegram
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))

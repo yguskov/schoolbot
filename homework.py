@@ -3,11 +3,14 @@ import logging
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 
+import school
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
 logger = logging.getLogger(__name__)
+
 
 def cancel(update: Update, context: CallbackContext) -> int:
     """Cancels and ends the conversation."""
@@ -19,9 +22,19 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
     return ConversationHandler.END
 
+
 HOMEWORK, DATE, TOMORROW, GRADES = range(4)
 
+
 def start_homework(update: Update, context: CallbackContext) -> int:
+    """Verify that user is authorized."""
+    if not school.is_auth_ok(update):
+        update.message.reply_text(
+            'Пожалуйста, авторизуйтесь, для этого запустите команду /start',
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        return ConversationHandler.END
+
     """Starts the conversation and asks the user about their gender."""
     reply_keyboard = [['Дз на завтра', 'Дз на определенное число']]
 
@@ -33,6 +46,7 @@ def start_homework(update: Update, context: CallbackContext) -> int:
     )
 
     return HOMEWORK
+
 
 def homework(update: Update, context: CallbackContext) -> int:
 
@@ -51,20 +65,12 @@ def date(update: Update, context: CallbackContext) -> int:
     update.message.reply_text(x, reply_markup=ReplyKeyboardRemove(),)
     return ConversationHandler.END
 
+
 def tomorrow(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("User %s say %s", user.first_name, update.message.text)
 
     update.message.reply_text('Вот вам дз на завтра', reply_markup=ReplyKeyboardRemove(),)
-    return ConversationHandler.END
-
-def start_grades(update: Update, context: CallbackContext) -> int:
-    update.message.reply_text('Оценки в четверти')
-    return GRADES
-
-def grades(update: Update, context: CallbackContext) -> int:
-    m = 1
-    a = [[0] * m for i in range(18)]
     return ConversationHandler.END
 
 
@@ -78,11 +84,3 @@ conv_handler_homework = ConversationHandler(
     fallbacks=[CommandHandler('cancel', cancel)],
 )
 
-
-conv_handler_grades = ConversationHandler(
-    entry_points=[CommandHandler('grades', start_grades)],
-    states={
-        GRADES: [MessageHandler(Filters.text, grades)],
-    },
-    fallbacks=[CommandHandler('cancel', cancel)],
-)

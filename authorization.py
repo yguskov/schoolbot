@@ -1,4 +1,4 @@
-import os, json
+import os
 import logging
 
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -22,15 +22,12 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
     return ConversationHandler.END
 
+
 LOGIN, PASSWORD, AUTHORIZE = range(3)
 
-def start(update: Update, context: CallbackContext) -> int:
-    session_file_name = 'data/' + get_chat_id(update) + '.json'
-    if os.path.exists(session_file_name):
-        with open(session_file_name) as json_file:
-            school.session_data = json.load(json_file)
-            logger.info("Session id %s ", school.session_data['session_id'])
 
+def start(update: Update, context: CallbackContext) -> int:
+    if school.is_auth_ok(update):
             update.message.reply_text(
                 'Вы авторизованный пользователь',  # FIXME parse and say to user real name of account
                 reply_markup=ReplyKeyboardRemove(),
@@ -53,6 +50,7 @@ def start(update: Update, context: CallbackContext) -> int:
 userLogin = ''
 userPassword = ''
 
+
 def login(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
     user = update.message.from_user
@@ -71,6 +69,7 @@ def login(update: Update, context: CallbackContext) -> int:
     )
     return PASSWORD
 
+
 def password(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
     global userLogin
@@ -83,12 +82,12 @@ def password(update: Update, context: CallbackContext) -> int:
     )
     return AUTHORIZE
 
+
 def authorize(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
     user = update.message.from_user
     global userLogin, userPassword, chat_id
-
-    os.environ['chat_id'] = str(get_chat_id(update))
+    os.environ['chat_id'] = str(school.get_chat_id(update))
     logger.info("Chat Id = %s \n", os.environ['chat_id'])
 
     userPassword = update.message.text
@@ -100,7 +99,7 @@ def authorize(update: Update, context: CallbackContext) -> int:
     logger.info("Password for %s is %s and auth result is %s", user.first_name, update.message.text, auth_result)
 
     update.message.reply_text(
-        'Авторизация крайне успешна',  # FIXME parse and say to user real name of account
+        'Авторизация прошла успешно',  # FIXME parse and say to user real name of account
         reply_markup=ReplyKeyboardRemove(),
     )
 
@@ -114,6 +113,19 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 
+def grades_command(update: Update, context: CallbackContext) -> None:
+    """Verify that user is authorized."""
+    if not school.is_auth_ok(update):
+        update.message.reply_text(
+            'Пожалуйста, авторизуйтесь, для этого запустите команду /start',
+            reply_markup=ReplyKeyboardRemove(),
+        )
+
+    # user = update.message.from_user
+    # logger.info("Help to User %s.", user.first_name)
+    update.message.reply_text('Оценки в четверти\n'+school.read_grades())
+
+
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
     states={
@@ -124,15 +136,6 @@ conv_handler = ConversationHandler(
     fallbacks=[CommandHandler('cancel', cancel)],
 )
 
-
-# method to get chat id
-def get_chat_id(update):
-    chat_id = None
-    if update.message is not None:
-        chat_id = update.message.chat.id
-    elif update.channel_post is not None:
-        chat_id = update.channel_post.chat.id
-    return str(chat_id)
 
 
 
