@@ -29,18 +29,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Define a few command handlers. These usually take the two arguments update and
-# context.
-
-# def start(update: Update, context: CallbackContext) -> None:
-#     """Send a message when the command /start is issued."""
-#     user = update.effective_user
-#     update.message.reply_markdown_v2(
-#         fr'Hi {user.mention_markdown_v2()}\!',
-#         reply_markup=ForceReply(selective=True),
-#     )
-
-
 
 def main() -> None:
     """Start the bot."""
@@ -52,14 +40,11 @@ def main() -> None:
     dispatcher = updater.dispatcher
 
     # on different commands - answer in Telegram
-    # dispatcher.add_handler(CommandHandler("start", authorize))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("grades", grades_command))
     dispatcher.add_handler(conv_handler)
     dispatcher.add_handler(conv_handler_homework)
     dispatcher.add_handler(CallbackQueryHandler(inline_calendar_handler))
-    # on non command i.e message - echo the message on Telegram
-    # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the Bot
     updater.start_polling()
