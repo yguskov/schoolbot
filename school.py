@@ -23,19 +23,41 @@ def read_grades() -> str:
                 grades[domElement.get('name')][domElement.get('mark_date')] = domElement.get_text('', True)
             else:
                 grades[domElement.get('name')] = dict()
-        # mn_gr = soup_nso.select('.cell')
-        # mean_grades.append(mn_gr)
 
     result_string = ''
     for subject, marks in grades.items():
-        # print(subject, end=' : ')
         result_string += subject
         result_string += ': '
         for date, mark in marks.items():
             result_string += mark + ' '
-            # print(mark, end=' ')
         result_string += '\n'
     return result_string
+
+
+def read_homework(shortDate, week: int) -> str:
+    global session_data
+
+    html = read_page('https://school.nso.ru/journal-app/'+session_data['pupil_id']+'/week.'+str(week))
+    dom = BeautifulSoup(html, 'html.parser')
+    result = ''
+    for domElement in dom.select('.dnevnik .dnevnik-day'):
+        logger.info(domElement.select_one('.dnevnik-day__header .dnevnik-day__title').get_text('', True))
+        _, dnevnik_date = domElement.select_one('.dnevnik-day__header .dnevnik-day__title').get_text('', True).split(', ')
+        logger.info("%s == %s", dnevnik_date, shortDate)
+        if shortDate == dnevnik_date:
+            """parse all home task of this day"""
+            result += dnevnik_date + " :\n"
+            for lessonElement in domElement.select('.dnevnik-day__lessons .dnevnik-lesson'):
+                result += lessonElement.select_one('.dnevnik-lesson__subject span').get_text('', True) + '  - '
+                home_task_element = lessonElement.select_one('.dnevnik-lesson__hometask .dnevnik-lesson__task')
+                if home_task_element:
+                    result += '  ' + home_task_element.get_text('', True)
+                result += '\n'
+            result += '\n'
+
+            return result
+
+    return "Не нашлась домашка за "+shortDate
 
 
 def save_session_data():
@@ -117,7 +139,6 @@ def is_auth_ok(update: Update) -> bool:
             return read_first_page()
 
     return False
-
 
 # method to get chat id
 def get_chat_id(update: Update):

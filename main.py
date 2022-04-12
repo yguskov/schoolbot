@@ -17,10 +17,10 @@ bot.
 
 import logging
 
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
 from authorization import conv_handler, help_command, grades_command
-from homework import conv_handler_homework
+from homework import conv_handler_homework, inline_calendar_handler
 
 # Enable logging
 logging.basicConfig(
@@ -45,8 +45,8 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
-    # updater = Updater("5040799832:AAF9F8KTQr6CuAKKz8ciWkBuKxQHuOBrTcI")  # py_guskov_bot
-    updater = Updater("5043534943:AAGNjukWrf9a-u1f-33wN6sF09N9WPwzdl0")
+    updater = Updater("5040799832:AAF9F8KTQr6CuAKKz8ciWkBuKxQHuOBrTcI")  # py_guskov_bot
+    # updater = Updater("5043534943:AAGNjukWrf9a-u1f-33wN6sF09N9WPwzdl0")
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -57,6 +57,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("grades", grades_command))
     dispatcher.add_handler(conv_handler)
     dispatcher.add_handler(conv_handler_homework)
+    dispatcher.add_handler(CallbackQueryHandler(inline_calendar_handler))
     # on non command i.e message - echo the message on Telegram
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
