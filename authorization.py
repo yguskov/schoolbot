@@ -16,9 +16,6 @@ def cancel(update: Update, context: CallbackContext) -> int:
     """Cancels and ends the conversation."""
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
-    # update.message.reply_text(
-    #     'Bye! I hope we can talk again some day.', reply_markup=ReplyKeyboardRemove()
-    # )
 
     return ConversationHandler.END
 
@@ -29,12 +26,11 @@ LOGIN, PASSWORD, AUTHORIZE = range(3)
 def start(update: Update, context: CallbackContext) -> int:
     if school.is_auth_ok(update):
             update.message.reply_text(
-                'Вы авторизованный пользователь',  # FIXME parse and say to user real name of account
+                'Вы авторизованный пользователь',  # todo parse and say to user real name of account
                 reply_markup=ReplyKeyboardRemove(),
             )
             return ConversationHandler.END
 
-    """Starts the conversation and asks the user about their gender."""
     reply_keyboard = [['Да', 'Нет']]
 
     update.message.reply_text(
@@ -52,7 +48,6 @@ userPassword = ''
 
 
 def login(update: Update, context: CallbackContext) -> int:
-    """Stores the selected gender and asks for a photo."""
     user = update.message.from_user
     logger.info("User %s say %s", user.first_name, update.message.text)
 
@@ -85,7 +80,6 @@ def password(update: Update, context: CallbackContext) -> int:
 
 def authorize(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
-    user = update.message.from_user
     global userLogin, userPassword, chat_id
     os.environ['chat_id'] = str(school.get_chat_id(update))
     logger.info("Chat Id = %s \n", os.environ['chat_id'])
@@ -99,7 +93,7 @@ def authorize(update: Update, context: CallbackContext) -> int:
     logger.info("Password for %s is %s and auth result is %s", user.first_name, update.message.text, auth_result)
 
     update.message.reply_text(
-        'Авторизация прошла успешно',  # FIXME parse and say to user real name of account
+        'Авторизация прошла успешно',  # todo parse and say to user real name of account
         reply_markup=ReplyKeyboardRemove(),
     )
 
@@ -110,7 +104,9 @@ def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     user = update.message.from_user
     logger.info("Help to User %s.", user.first_name)
-    update.message.reply_text('Help!')
+    update.message.reply_text("""/homework - домашняя работа на завтра или определённое число
+/grades - успеваемость
+/cancel - остановить выполнение команды""")
 
 
 def grades_command(update: Update, context: CallbackContext) -> None:
@@ -121,8 +117,6 @@ def grades_command(update: Update, context: CallbackContext) -> None:
             reply_markup=ReplyKeyboardRemove(),
         )
 
-    # user = update.message.from_user
-    # logger.info("Help to User %s.", user.first_name)
     update.message.reply_text('Оценки в четверти\n'+school.read_grades())
 
 

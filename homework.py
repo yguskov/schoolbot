@@ -9,8 +9,6 @@ import datetime
 
 import telegramcalendar
 import messages
-import utils
-
 
 
 logging.basicConfig(
@@ -24,9 +22,6 @@ def cancel(update: Update, context: CallbackContext) -> int:
     """Cancels and ends the conversation."""
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
-    # update.message.reply_text(
-    #     'Bye! I hope we can talk again some day.', reply_markup=ReplyKeyboardRemove()
-    # )
 
     return ConversationHandler.END
 
@@ -43,7 +38,6 @@ def start_homework(update: Update, context: CallbackContext) -> int:
         )
         return ConversationHandler.END
 
-    """Starts the conversation and asks the user about their gender."""
     reply_keyboard = [['Дз на завтра', 'Дз на определенное число']]
 
     update.message.reply_text(
@@ -61,26 +55,9 @@ def homework(update: Update, context: CallbackContext) -> int:
     if update.message.text != 'Дз на завтра':
         update.message.reply_text(text='Выберите дату',
                                   reply_markup=telegramcalendar.create_calendar())
-        # update.message.reply_text(
-        #         'На какое число?',
-        #         reply_markup=ReplyKeyboardRemove(),
-        # )
         return ConversationHandler.END
     else:
         return tomorrow(update, context)
-
-def inline_handler(update, context):
-    query = update.callback_query
-    (kind, _, _, _, _) = utils.separate_callback_data(query.data)
-    if kind == messages.CALENDAR_CALLBACK:
-        inline_calendar_handler(update, context)
-
-
-def calendar_handler(update, context):
-    update.message.reply_text(text=messages.calendar_message,
-                              reply_markup=telegramcalendar.create_calendar())
-    return ConversationHandler.END
-
 
 def inline_calendar_handler(update, context):
     selected, date = telegramcalendar.process_calendar_selection(update, context)

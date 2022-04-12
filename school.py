@@ -67,24 +67,15 @@ def save_session_data():
 
 
 def auth(login: str, password: str) -> bool:
-    headers = {
-        'Content-type': 'application/x-www-form-urlencoded',
-    }
 
-    cookies = {'school_domain': 'nso1613660760',
-               'schdomain': 'nso1613660760'}  # , 'session_id': 'e76f5e354dbeac4cf77ca5e2f7b47ca0'
-
-    # data = "email=yguskov@rssystems.ru&password=ggm"
-    # data = "username="+login+"&password="+password+"&return_uri=/"
     data = {'username': login, 'password': password}
-    #   data = "username=taliguskova&password=011294Kj&return_uri=/"
 
     logger.info(data)
 
     client = requests.Session()
 
     response = client.post('https://school.nso.ru/ajaxauthorize', data)
-    # FIXME verify for errors
+    # todo verify for errors
 
     logger.info("Auth success \nsession id = %s \n response from auth\n%s \n ", client.cookies['session_id'],
                 response.text)
@@ -140,7 +131,7 @@ def is_auth_ok(update: Update) -> bool:
 
     return False
 
-# method to get chat id
+
 def get_chat_id(update: Update):
     chat_id = None
     if update.message is not None:
