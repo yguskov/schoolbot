@@ -86,7 +86,7 @@ def authorize(update: Update, context: CallbackContext) -> int:
 
     userPassword = update.message.text
     user = update.message.from_user
-    logger.info("Login and password for %s is %s / %s", user.first_name, userLogin, userPassword)
+    logger.info("Login and password for %s is %s / ***", user.first_name, userLogin)
 
     auth_result = school.auth(userLogin, userPassword)
     if auth_result:
@@ -94,7 +94,7 @@ def authorize(update: Update, context: CallbackContext) -> int:
     else:
         message = 'Авторизация не удалась, попробуйте другой пароль и логин'
 
-    logger.info("Password for %s is %s and auth result is %d", user.first_name, update.message.text, auth_result)
+    logger.info("Auth result is %d", auth_result)
 
     update.message.reply_text(
         message,
