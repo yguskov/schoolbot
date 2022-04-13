@@ -22,7 +22,7 @@ def read_grades() -> str:
             if not (domElement.get('name') in grades):
                 grades[domElement.get('name')] = dict()
 
-            logger.info('grades[%s][%s]=%s', domElement.get('name'), domElement.get('mark_date'), domElement.get_text('', True))
+            # logger.info('grades[%s][%s]=%s', domElement.get('name'), domElement.get('mark_date'), domElement.get_text('', True))
             grades[domElement.get('name')][domElement.get('mark_date')] = domElement.get_text('', True)
 
     result_string = ''
@@ -32,6 +32,7 @@ def read_grades() -> str:
         for date, mark in marks.items():
             result_string += mark + ' '
         result_string += '\n'
+    logger.info(result_string)
     return result_string
 
 
