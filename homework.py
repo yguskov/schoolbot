@@ -66,7 +66,7 @@ def inline_calendar_handler(update, context):
         today = datetime.datetime.now()
         monday1 = (date - datetime.timedelta(days=date.weekday()))
         monday2 = (today - datetime.timedelta(days=today.weekday()))
-        result = school.read_homework(short_date, math.ceil((monday2 - monday1).days / 7) )
+        result = school.read_homework(short_date, math.ceil((monday2 - monday1).days / 7))
         context.bot.send_message(chat_id=update.callback_query.from_user.id,
                                  text=result,
                                  reply_markup=ReplyKeyboardRemove())

@@ -76,9 +76,11 @@ def auth(login: str, password: str) -> bool:
 
     response = client.post('https://school.nso.ru/ajaxauthorize', data)
     # todo verify for errors
+    if not response.json()['result']:
+        logger.info("Auth failed %s", response.json())
+        return False
 
-    logger.info("Auth success \nsession id = %s \n response from auth\n%s \n ", client.cookies['session_id'],
-                response.text)
+    logger.info("Auth success \nsession id = %s \n response from auth\n%s \n ", client.cookies['session_id'], response.text)
 
     chat_id = os.environ['chat_id']
 

@@ -34,7 +34,7 @@ def start(update: Update, context: CallbackContext) -> int:
     reply_keyboard = [['Да', 'Нет']]
 
     update.message.reply_text(
-        'Привет! Сначала нужно авторизоваться в электронном дневнике?\nХотите это сделать?',
+        'Привет! Для использования бота нужно авторизоваться в электронном дневнике?\nДля этого нужно знать логин и пароль к сайту school.nso.ru.\nПродолжить?',
         reply_markup=ReplyKeyboardMarkup(
             reply_keyboard, one_time_keyboard=False, input_field_placeholder='Да?'
         ),
@@ -89,11 +89,15 @@ def authorize(update: Update, context: CallbackContext) -> int:
     logger.info("Login and password for %s is %s / %s", user.first_name, userLogin, userPassword)
 
     auth_result = school.auth(userLogin, userPassword)
+    if auth_result:
+        message = 'Авторизация прошла успешно'
+    else:
+        message = 'Авторизация не удалась, попробуйте другой пароль и логин'
 
-    logger.info("Password for %s is %s and auth result is %s", user.first_name, update.message.text, auth_result)
+    logger.info("Password for %s is %s and auth result is %d", user.first_name, update.message.text, auth_result)
 
     update.message.reply_text(
-        'Авторизация прошла успешно',  # todo parse and say to user real name of account
+        message,
         reply_markup=ReplyKeyboardRemove(),
     )
 
