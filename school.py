@@ -24,13 +24,16 @@ def read_grades() -> str:
 
             # logger.info('grades[%s][%s]=%s', domElement.get('name'), domElement.get('mark_date'), domElement.get_text('', True))
             grades[domElement.get('name')][domElement.get('mark_date')] = domElement.get_text('', True)
-
+    mean = []
+    for el in dom.select('#g0_avg'):
+        mean += el.get_text()
     result_string = ''
-    for subject, marks in grades.items():
+    for subject, marks in grades.items() and el in mean:
         result_string += subject
         result_string += ': '
         for date, mark in marks.items():
             result_string += mark + ' '
+        result_string += el
         result_string += '\n'
     logger.info(result_string)
     return result_string
