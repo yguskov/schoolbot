@@ -24,7 +24,7 @@ def read_grades() -> str:
                 grades[domElement.get('name')] = dict()
 
             # logger.info('grades[%s][%s]=%s', domElement.get('name'), domElement.get('mark_date'), domElement.get_text('', True))
-            grades[domElement.get('name')][domElement.get('mark_date')] = domElement.get_text('', True)
+            grades[domElement.get('name')][domElement.get('id')] = domElement.get_text('', True)
 
 
     result_string = ''
@@ -67,7 +67,7 @@ def read_grades() -> str:
             avg = grades_sum / len(avg_grades)
             logger.info(avg)
             result_string += mark + ' '
-        result_string += '= ' + str(avg)
+        result_string += '= ' + str(round(avg, 2))
         result_string += '\n'
     logger.info(result_string)
     return result_string
