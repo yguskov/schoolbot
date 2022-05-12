@@ -17,6 +17,7 @@ def read_grades() -> str:
 
     grades = dict()
 
+
     for domElement in dom.select('div[mark_date]'):
         if domElement.get('mark_date') != "":
             if not (domElement.get('name') in grades):
@@ -24,16 +25,49 @@ def read_grades() -> str:
 
             # logger.info('grades[%s][%s]=%s', domElement.get('name'), domElement.get('mark_date'), domElement.get_text('', True))
             grades[domElement.get('name')][domElement.get('mark_date')] = domElement.get_text('', True)
-    mean = []
-    for el in dom.select('#g0_avg'):
-        mean += el.get_text()
+
+
     result_string = ''
-    for subject, marks in grades.items() and el in mean:
+    for subject, marks in grades.items():
+        avg_grades = []
         result_string += subject
         result_string += ': '
         for date, mark in marks.items():
+            if mark == 'Н' or mark == 'Б' or mark == '':
+                continue
+            elif '✕' in mark:
+                mark = mark.replace('-', '')
+                xnumber = mark.find('✕')
+                logger.info(int(mark[xnumber+1]))
+                for i in range(int(mark[xnumber+1])):
+                    if '/' in mark[:xnumber]:
+                        avg_element = int(mark[0])
+                        avg_grades.append(avg_element)
+                    elif int(mark[:xnumber]) > 10:
+                        avg_element = (int(mark[0]) + int(mark[1])) / 2
+                        avg_grades.append(avg_element)
+                    else:
+                        avg_element = int(mark[:xnumber])
+                        avg_grades.append(avg_element)
+            else:
+                mark = mark.replace('-', '')
+                if '/' in mark:
+                    avg_element = int(mark[0])
+                    avg_grades.append(avg_element)
+                elif int(mark) > 10:
+                    avg_element = (int(mark[0]) + int(mark[1])) / 2
+                    avg_grades.append(avg_element)
+                else:
+                    avg_element = int(mark)
+                    avg_grades.append(avg_element)
+            grades_sum = 0
+            logger.info(avg_grades)
+            for element in avg_grades:
+                grades_sum += element
+            avg = grades_sum / len(avg_grades)
+            logger.info(avg)
             result_string += mark + ' '
-        result_string += el
+        result_string += '= ' + str(avg)
         result_string += '\n'
     logger.info(result_string)
     return result_string
