@@ -87,10 +87,14 @@ def read_homework(shortDate, week: int) -> str:
             """parse all home task of this day"""
             result += dnevnik_date + " :\n"
             for lessonElement in domElement.select('.dnevnik-day__lessons .dnevnik-lesson'):
-                result += lessonElement.select_one('.dnevnik-lesson__subject span').get_text('', True) + '  - '
-                home_task_element = lessonElement.select_one('.dnevnik-lesson__hometask .dnevnik-lesson__task')
-                if home_task_element:
-                    result += '  ' + home_task_element.get_text('', True)
+                try:
+                    result += lessonElement.select_one('.dnevnik-lesson__subject span').get_text('', True) + '  - '
+                    home_task_element = lessonElement.select_one('.dnevnik-lesson__hometask .dnevnik-lesson__task')
+                    if home_task_element:
+                        result += '  ' + home_task_element.get_text('', True)
+                except AttributeError:
+                    logger.info(lessonElement.encode_contents())
+
                 result += '\n'
             result += '\n'
 
