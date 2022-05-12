@@ -30,7 +30,6 @@ HOMEWORK, DATE, TOMORROW, GRADES = range(4)
 
 
 def start_homework(update: Update, context: CallbackContext) -> int:
-    """Verify that user is authorized."""
     if not school.is_auth_ok(update):
         update.message.reply_text(
             'Пожалуйста, авторизуйтесь, для этого запустите команду /start',

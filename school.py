@@ -41,7 +41,10 @@ def read_grades() -> str:
                 logger.info(int(mark[xnumber+1]))
                 for i in range(int(mark[xnumber+1])):
                     if '/' in mark[:xnumber]:
-                        avg_element = int(mark[0])
+                        slashnumber = mark.find('/')
+                        avg_element = int(mark[:slashnumber])
+                        avg_grades.append(avg_element)
+                        avg_element = int(mark[slashnumber+1:xnumber])
                         avg_grades.append(avg_element)
                     elif int(mark[:xnumber]) > 10:
                         avg_element = (int(mark[0]) + int(mark[1])) / 2
@@ -52,7 +55,16 @@ def read_grades() -> str:
             else:
                 mark = mark.replace('-', '')
                 if '/' in mark:
-                    avg_element = int(mark[0])
+                    slashnumber = mark.find('/')
+                    avg_element = int(mark[:slashnumber])
+                    if avg_element > 10:
+                        avg_element = (int(mark[0]) + int(mark[1])) / 2
+                        avg_grades.append(avg_element)
+                    avg_grades.append(avg_element)
+                    avg_element = int(mark[slashnumber+1:])
+                    if avg_element > 10:
+                        avg_element = (int(mark[slashnumber+1]) + int(mark[slashnumber+2])) / 2
+                        avg_grades.append(avg_element)
                     avg_grades.append(avg_element)
                 elif int(mark) > 10:
                     avg_element = (int(mark[0]) + int(mark[1])) / 2
@@ -84,7 +96,6 @@ def read_homework(shortDate, week: int) -> str:
         _, dnevnik_date = domElement.select_one('.dnevnik-day__header .dnevnik-day__title').get_text('', True).split(', ')
         logger.info("%s == %s", dnevnik_date, shortDate)
         if shortDate == dnevnik_date:
-            """parse all home task of this day"""
             result += dnevnik_date + " :\n"
             for lessonElement in domElement.select('.dnevnik-day__lessons .dnevnik-lesson'):
                 try:
@@ -100,7 +111,7 @@ def read_homework(shortDate, week: int) -> str:
 
             return result
 
-    return "Не нашлась домашка за "+shortDate
+    return "Не нашлась домашняя работа за "+shortDate
 
 
 def save_session_data():

@@ -13,7 +13,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def cancel(update: Update, context: CallbackContext) -> int:
-    """Cancels and ends the conversation."""
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
 
@@ -26,7 +25,7 @@ LOGIN, PASSWORD, AUTHORIZE = range(3)
 def start(update: Update, context: CallbackContext) -> int:
     if school.is_auth_ok(update):
             update.message.reply_text(
-                'Вы авторизованный пользователь',  # todo parse and say to user real name of account
+                'Вы авторизованный пользователь',  
                 reply_markup=ReplyKeyboardRemove(),
             )
             return ConversationHandler.END
@@ -66,7 +65,6 @@ def login(update: Update, context: CallbackContext) -> int:
 
 
 def password(update: Update, context: CallbackContext) -> int:
-    """Stores the selected gender and asks for a photo."""
     global userLogin
     userLogin = update.message.text
     user = update.message.from_user
@@ -79,7 +77,6 @@ def password(update: Update, context: CallbackContext) -> int:
 
 
 def authorize(update: Update, context: CallbackContext) -> int:
-    """Stores the selected gender and asks for a photo."""
     global userLogin, userPassword, chat_id
     os.environ['chat_id'] = str(school.get_chat_id(update))
     logger.info("Chat Id = %s \n", os.environ['chat_id'])
@@ -114,7 +111,6 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def grades_command(update: Update, context: CallbackContext) -> None:
-    """Verify that user is authorized."""
     if not school.is_auth_ok(update):
         update.message.reply_text(
             'Пожалуйста, авторизуйтесь, для этого запустите команду /start',
