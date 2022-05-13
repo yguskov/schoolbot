@@ -116,8 +116,8 @@ def grades_command(update: Update, context: CallbackContext) -> None:
             'Пожалуйста, авторизуйтесь, для этого запустите команду /start',
             reply_markup=ReplyKeyboardRemove(),
         )
-
-    update.message.reply_text('Оценки в четверти\n'+school.read_grades())
+    else:
+        update.message.reply_text('Оценки в четверти\n'+school.read_grades())
 
 
 conv_handler = ConversationHandler(

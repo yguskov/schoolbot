@@ -152,12 +152,13 @@ def read_first_page() -> bool:
 
     dom = BeautifulSoup(html, 'html.parser')
     link_to_grades = dom.select_one('a[href*="journal-student-grades-action"]')
-    s1, s2, pupil_id = link_to_grades.get('href').split('/')
-    logger.info("Pupil id\n%s\n ", pupil_id)
+    if link_to_grades:
+        s1, s2, pupil_id = link_to_grades.get('href').split('/')
+        logger.info("Pupil id\n%s\n ", pupil_id)
 
-    if pupil_id:
-        session_data['pupil_id'] = pupil_id
-        return True
+        if pupil_id:
+            session_data['pupil_id'] = pupil_id
+            return True
 
     return False
 
